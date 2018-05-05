@@ -2,7 +2,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import {
-    window, commands, Disposable, ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument
+    WorkspaceEdit, workspace, window, commands, Disposable, ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument
 } from 'vscode';
 
 // this method is called when your extension is activated
@@ -39,8 +39,16 @@ class WordCounter {
         }
 
         let doc = editor.document;
+        const firstLine = doc.lineAt(0);
+
+        if (firstLine.text !== '@42 harry') {
+            const edit = new WorkspaceEdit();
+            edit.insert(doc.uri, firstLine.range.start, '@42 harry\n');
+
+            return workspace.applyEdit(edit);
+        }
         // Only update status if an Markdown file
-        if (doc.languageId === "markdown") {
+        if (doc.languageId === "feature") {
             let wordCount = this._getWordCount(doc);
 
             // Update the status bar
